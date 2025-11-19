@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+		<title>Host - Jaka To Melodia</title>
+		<script src="/socket.js"></script>
+		<style></style>
+	</head>
+	<body>
+		<div>
+			<button onclick="socket.send('host', {action: 'clear'} )">clear</button>
+			<button onclick="socket.send('host', {action: 'play'} )">play</button>
+			<button onclick="socket.send('host', {action: 'pause'} )">pause</button>
+			<button onclick="socket.send('host', {action: 'next'} )">next</button>
+		</div>
+
+		<br />
+
+		<div>
+			<button onclick="socket.send('host', {action: 'points', points: 0.5} )">
+				+.5
+			</button>
+			<button onclick="socket.send('host', {action: 'points', points: 1} )">
+				+1
+			</button>
+			<button onclick="socket.send('host', {action: 'points', points: 2} )">
+				+2
+			</button>
+			<button onclick="socket.send('host', {action: 'nextPlayer'} )">
+				next player
+			</button>
+		</div>
+
+		<br />
+
+		<div id=""></div>
+
+		<script>
+			const socket = new Socket('host')
+		</script>
+	</body>
+</html>
