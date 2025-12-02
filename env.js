@@ -6,7 +6,7 @@ const NODE_ENV = process.env.NODE_ENV,
 		development: '.dev.env',
 	}[NODE_ENV ?? 'production']
 
-console.info(`env: ${NODE_ENV} | ${dotfile}`)
+console.info(`env   : ${NODE_ENV} | ${dotfile}`)
 
 const config = dotenv.config({ path: `./${dotfile}` })
 

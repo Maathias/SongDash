@@ -1,122 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-		<title>Player - Jaka To Melodia</title>
-		<script src="/socket.js"></script>
-		<script src="/wakelock.js"></script>
+    <title>Player - Jaka To Melodia</title>
+    <script src="/socket.js"></script>
+    <script src="/wakelock.js"></script>
 
-		<link rel="stylesheet" href="/pattern.css" />
+    <link rel="stylesheet" href="/pattern.css" />
 
-		<style>
-			body {
-				margin: 0;
-				display: flex;
-				flex-direction: column;
-				height: 100vh;
-				justify-content: center;
-				overflow: hidden;
+    <style>
+      body {
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        justify-content: center;
+        overflow: hidden;
 
-				--fgcolor: #e7213b;
-				--bgcolor: #b93834;
-				--pattern: 22px;
-			}
+        --fgcolor: #e7213b;
+        --bgcolor: #b93834;
+        --pattern: 22px;
+      }
 
-			button {
-				width: calc(100vw - 2rem);
-				height: calc(100vw - 2rem);
+      button {
+        width: calc(100vw - 2rem);
+        height: calc(100vw - 2rem);
 
-				border-radius: 100%;
-				margin: 1rem;
-				background-color: #ee1020;
-				user-select: none;
-				border-width: 4px;
-			}
+        border-radius: 100%;
+        margin: 1rem;
+        background-color: #ee1020;
+        user-select: none;
+        border-width: 4px;
+      }
 
-			button > img {
-				height: 50%;
-				transition: 0.2s;
-			}
+      button > img {
+        height: 50%;
+        transition: 0.2s;
+      }
 
-			button:active > img {
-				height: 60%;
-				transform: skewx(-49deg);
-			}
+      button:active > img {
+        height: 60%;
+        transform: skewx(-49deg);
+      }
 
-			button:active {
-				background-color: #bb1020;
-			}
+      button:active {
+        background-color: #bb1020;
+      }
 
-			input {
-				width: calc(100vw - 2rem);
-				box-sizing: border-box;
-				margin: 1rem;
-				margin-bottom: 0;
-				font-size: 1rem;
-				text-align: center;
-				font-family: monospace;
-			}
+      input {
+        width: calc(100vw - 2rem);
+        box-sizing: border-box;
+        margin: 1rem;
+        margin-bottom: 0;
+        font-size: 1rem;
+        text-align: center;
+        font-family: monospace;
+      }
 
-			#score {
-				font-family: monospace;
-				box-sizing: border-box;
-				padding: 1em;
-				background-color: #fff6;
-				font-size: 1rem;
-			}
-		</style>
-	</head>
-	<body class="patterned">
-		<div id="score">
-			<span>Punkty:</span>
-			<span id="points">0</span>
-		</div>
+      #score {
+        font-family: monospace;
+        box-sizing: border-box;
+        padding: 1em;
+        background-color: #fff6;
+        font-size: 1rem;
+      }
+    </style>
+  </head>
+  <body class="patterned">
+    <div id="score">
+      <span>Punkty:</span>
+      <span id="points">0</span>
+    </div>
 
-		<input type="text" id="nick" placeholder="nick" maxlength="20" />
+    <input type="text" id="nick" placeholder="nick" maxlength="20" />
 
-		<button>
-			<img src="twerk.gif" alt="doopa" />
-		</button>
+    <button>
+      <img src="twerk.gif" alt="doopa" />
+    </button>
 
-		<script>
-			const socket = new Socket('player')
+    <script>
+      const socket = new Socket('player')
 
-			requestWakeLock()
+      requestWakeLock()
 
-			let nodeButton = document.querySelector('button'),
-				nodeNick = document.querySelector('#nick'),
-				nodePoints = document.querySelector('#points')
+      // Cache DOM elements
+      const nodeButton = document.querySelector('button'),
+        nodeNick = document.querySelector('#nick'),
+        nodePoints = document.querySelector('#points')
 
-			socket.send('nick', localStorage.getItem('nick'))
-			nodeNick.value = localStorage.getItem('nick')
+      // Initialize nickname
+      const savedNick = localStorage.getItem('nick') || ''
+      nodeNick.value = savedNick
+      socket.player('nick', savedNick)
 
-			function enter() {
-				socket.send('enter')
-			}
+      // Handle button press
+      nodeButton.addEventListener('mousedown', () => socket.player('enter'))
+      nodeButton.addEventListener('touchstart', () => socket.player('enter'), { passive: true })
 
-			nodeButton.addEventListener('mousedown', enter)
-			nodeButton.addEventListener('touchstart', enter)
+      // Handle nickname changes
+      const setNick = e => {
+        const nick = e.target.value.trim().toLowerCase()
+        socket.player('nick', nick)
+        localStorage.setItem('nick', nick)
+      }
 
-			function setNick(e) {
-				let nick = e.target.value.trim().toLowerCase()
-				socket.send('nick', nick)
-				localStorage.setItem('nick', nick)
-			}
+      nodeNick.addEventListener('change', setNick)
 
-			nodeNick.addEventListener(
-				'keydown',
-				(e) => e.keyCode === 13 && setNick(e)
-			)
-			nodeNick.addEventListener('blur', setNick)
-
-			socket.bind((data) => {
-				if (data.points) {
-					nodePoints.textContent = data.points
-				}
-			})
-		</script>
-	</body>
+      // Update points display
+      socket.bind(data => {
+        if (data.points !== undefined) {
+          nodePoints.textContent = data.points
+        }
+      })
+    </script>
+  </body>
 </html>
