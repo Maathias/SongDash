@@ -15,27 +15,48 @@ When a player presses their button, the music pauses and they join the queue. Th
 
 ## Setup
 
+### Development
+
 1. Clone the repository
 2. Install dependencies:
    ```bash
    pnpm install
    ```
-3. Modifications:
+3. Configuration (optional):
 
-	For customizations, look at `.env.example` for possible values, and change them in `.env` before launching
+   For customizations, look at `.env.example` for possible values, and change them in `.env` before launching
 
    IMPORTANT: for a working QR code generation, create a `.env` file with at least `SERVER_HOST`
 
-4. Start the server:
+4. Start the development server:
 
    ```bash
-   pnpm start
+   pnpm dev
    ```
 
 5. Open the interfaces:
-   - Host: `http://<ip-address>:2500/host.html`
-   - TV: `http://<ip-address>:2500/tv.html`
-   - Players: `http://<ip-address>:2500/player.html`
+   - Host: `http://<ip-address>:2500/host`
+   - TV: `http://<ip-address>:2500/tv`
+   - Players: `http://<ip-address>:2500/player`
+   - Debug: `http://<ip-address>:2500/debug`
+
+### Production Build
+
+Build optimized client files and server:
+
+```bash
+pnpm build
+```
+
+This will:
+1. Bundle and minify all client-side code with Vite
+2. Generate standalone binaries for Windows and Linux (Note: Binary generation currently has ESM compatibility issues and is under development)
+
+Run the production server:
+
+```bash
+pnpm start
+```
 
 ## Technical Details
 

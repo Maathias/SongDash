@@ -1,0 +1,148 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	font-family: 'Courier New', monospace;
+	background: #1a1a1a;
+	color: #e0e0e0;
+	padding: 10px;
+	font-size: 12px;
+}
+
+h1 {
+	font-size: 16px;
+	margin-bottom: 10px;
+	color: #00ff00;
+	border-bottom: 1px solid #333;
+	padding-bottom: 5px;
+}
+
+h2 {
+	font-size: 14px;
+	margin: 15px 0 5px 0;
+	color: #00aaff;
+}
+
+.section {
+	margin-bottom: 15px;
+	border: 1px solid #333;
+	padding: 10px;
+	background: #0a0a0a;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 5px 0;
+}
+
+th,
+td {
+	text-align: left;
+	padding: 4px 8px;
+	border: 1px solid #333;
+}
+
+th {
+	background: #222;
+	color: #ffaa00;
+	font-weight: bold;
+}
+
+td {
+	background: #111;
+}
+
+.status {
+	display: inline-block;
+	padding: 2px 6px;
+	border-radius: 3px;
+	font-weight: bold;
+}
+
+.status.connected {
+	background: #004400;
+	color: #00ff00;
+}
+
+.status.disconnected {
+	background: #440000;
+	color: #ff0000;
+}
+
+.status.playing {
+	background: #004400;
+	color: #00ff00;
+}
+
+.status.paused {
+	background: #444400;
+	color: #ffff00;
+}
+
+.status.waiting {
+	background: #444444;
+	color: #888888;
+}
+
+.status.active {
+	background: #000044;
+	color: #00aaff;
+}
+
+.type-tv {
+	background: #440044;
+	color: #ff00ff;
+	font-weight: bold;
+}
+
+.type-host {
+	background: #004444;
+	color: #00ffff;
+	font-weight: bold;
+}
+
+.type-debug {
+	background: #444400;
+	color: #ffff00;
+	font-weight: bold;
+}
+
+.timestamp {
+	float: right;
+	color: #666;
+	font-size: 11px;
+}
+
+.key-value {
+	display: grid;
+	grid-template-columns: 150px 1fr;
+	gap: 5px;
+	margin: 3px 0;
+}
+
+.key {
+	color: #888;
+}
+
+.value {
+	color: #e0e0e0;
+	word-break: break-all;
+}
+
+.empty {
+	color: #666;
+	font-style: italic;
+}
+
+.json {
+	background: #000;
+	border: 1px solid #333;
+	padding: 5px;
+	margin: 5px 0;
+	overflow-x: auto;
+	font-size: 11px;
+}

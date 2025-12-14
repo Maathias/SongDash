@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+	<title>Host - Jaka To Melodia</title>
+
+	<link rel="stylesheet" href="/pattern.css" />
+	<link rel="stylesheet" href="../styles/host.css" />
+</head>
+
+<body class="patterned">
+	<div class="container">
+		<h1>Host Panel</h1>
+
+		<div class="track-info">
+			<div class="track" id="track">—</div>
+			<div class="artist" id="artist">—</div>
+		</div>
+
+		<div class="section">
+			<div class="section-title">Playback</div>
+			<div class="button-group">
+				<button onclick="socket.host('play')">Play</button>
+				<button onclick="socket.host('pause')">Pause</button>
+				<button onclick="socket.host('next')">Next</button>
+				<button onclick="socket.host('clear')">Clear</button>
+			</div>
+		</div>
+
+		<div class="section">
+			<div class="section-title">Points</div>
+			<div class="button-group">
+				<button onclick="socket.host('points', { points: 0.5 })">+0.5</button>
+				<button onclick="socket.host('points', { points: 1 })">+1</button>
+				<button onclick="socket.host('points', { points: 2 })">+2</button>
+				<button onclick="socket.host('nextPlayer')">Next Player</button>
+			</div>
+		</div>
+
+		<div class="section">
+			<div class="section-title">QR Code</div>
+			<div class="button-group">
+				<button onclick="socket.host('showQr', { show: true })">Show QR</button>
+				<button onclick="socket.host('showQr', { show: false })">Hide QR</button>
+			</div>
+		</div>
+	</div>
+
+	<script src="/socket.js"></script>
+	<script type="module" src="../scripts/host.js"></script>
+</body>
+
+</html>

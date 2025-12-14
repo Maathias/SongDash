@@ -1,0 +1,168 @@
+body {
+	height: 100vh;
+	padding: 0;
+	margin: 0;
+	display: flex;
+	flex-direction: row;
+	--pattern: 22px;
+	overflow: hidden;
+	position: relative;
+}
+
+.section {
+	flex: 1;
+	padding: 2rem;
+	overflow-y: auto;
+	background: #0005;
+	--margin: 1em;
+	margin: var(--margin);
+	border-radius: 1em;
+}
+
+.section.l {
+	margin-right: calc(var(--margin) / 2);
+}
+
+.section.r {
+	margin-left: calc(var(--margin) / 2);
+}
+
+.section .title {
+	font-size: 2.5rem;
+	font-weight: bold;
+	margin-bottom: 1.5rem;
+	text-align: center;
+	color: #fff;
+	font-family: monospace;
+	border-bottom: 1px solid #fff3;
+	padding-bottom: 0.5em;
+}
+
+#status {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: -1;
+	pointer-events: none;
+	font-size: 500px;
+	--opacity: 0.25;
+	text-shadow: 0 0 20px rgba(0, 0, 0, var(--opacity));
+	color: rgba(0, 0, 0, var(--opacity));
+}
+
+#queue {
+	font-size: 30px;
+	font-family: monospace;
+	text-align: left;
+	counter-reset: poz;
+}
+
+#queue>.nick {
+	display: flex;
+	padding: 0.8rem 1.5rem;
+	margin: 0.5rem 0;
+	background-color: rgba(255, 255, 255, 0.15);
+	border-radius: 0.5rem;
+	color: #fff;
+}
+
+#queue>.nick::before {
+	counter-increment: poz;
+	content: '#' counter(poz) ' ';
+	font-weight: bold;
+	color: #ccc;
+	padding-right: 1em;
+	width: 1.5em;
+}
+
+#queue>img {
+	height: 10vh;
+}
+
+#queue .nick.active {
+	outline: 2px solid #fff;
+}
+
+#qr-modal {
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.9);
+	z-index: 1000;
+	align-items: center;
+	justify-content: center;
+}
+
+#qr-modal.show {
+	display: flex;
+}
+
+#qr-modal .content {
+	background-color: white;
+	padding: 2rem;
+	border-radius: 1rem;
+	text-align: center;
+	max-width: 90vw;
+	max-height: 90vh;
+}
+
+#qr-modal .content img {
+	max-width: 100%;
+	height: auto;
+	border-radius: 0.5rem;
+}
+
+#scoreboard {
+	width: 100%;
+	font-size: 1.5rem;
+	font-family: monospace;
+}
+
+#scoreboard .item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0.8rem 1.5rem;
+	margin: 0.5rem 0;
+	background-color: rgba(255, 255, 255, 0.15);
+	border-radius: 0.5rem;
+	color: #fff;
+}
+
+#scoreboard .item .rank i {
+	font-size: 2rem;
+}
+
+#scoreboard .item:nth-child(1) .rank {
+	color: gold;
+}
+
+#scoreboard .item:nth-child(2) .rank {
+	color: silver;
+}
+
+#scoreboard .item:nth-child(3) .rank {
+	color: #cd7f32;
+	/* Bronze */
+}
+
+#scoreboard .item>.rank {
+	font-weight: bold;
+	margin-right: 1rem;
+	min-width: 2.5rem;
+}
+
+#scoreboard .item>.nick {
+	flex: 1;
+	text-align: left;
+}
+
+#scoreboard .item>.score {
+	font-weight: bold;
+	min-width: 3rem;
+	text-align: right;
+}

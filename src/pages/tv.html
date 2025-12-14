@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+	<title>TV - Jaka To Melodia</title>
+
+	<link rel="stylesheet" href="/common.css" />
+	<link rel="stylesheet" href="/pattern.css" />
+	<link rel="stylesheet" href="/loader.css" />
+	<link rel="stylesheet" href="../styles/tv.css" />
+</head>
+
+<body class="patterned">
+	<!-- Status Indicator -->
+	<div id="status" class="status"></div>
+
+	<!-- Left: Queue -->
+	<div class="section l">
+		<div class="title">
+			<i class="icon-stopwatch"></i>
+		</div>
+		<div id="queue">
+			<!-- Example
+				<div class="nick active"> </div>
+			-->
+		</div>
+	</div>
+
+	<!-- Right: Scoreboard -->
+	<div class="section r">
+		<div class="title">
+			<i class="icon-award"></i>
+		</div>
+		<div id="scoreboard">
+			<!-- Example
+			<div class="item">
+				<span class="rank"> </span>
+				<span class="nick"> </span>
+				<span class="score"> </span>
+			</div>
+			-->
+		</div>
+	</div>
+
+	<!-- QR Modal -->
+	<div id="qr-modal">
+		<div class="content">
+			<img src="/qr" alt="QR Code" />
+		</div>
+	</div>
+
+	<script src="/wakelock.js"></script>
+	<script src="/socket.js"></script>
+	<script type="module" src="../scripts/tv.js"></script>
+</body>
+
+</html>

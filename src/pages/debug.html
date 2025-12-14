@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>SongDash Debug</title>
+	<link rel="stylesheet" href="../styles/debug.css">
+</head>
+
+<body>
+	<h1>SongDash Debug Panel <span class="timestamp" id="timestamp">--</span></h1>
+
+	<div class="section">
+		<h2>Music Status</h2>
+		<div class="key-value">
+			<div class="key">Status:</div>
+			<div class="value"><span id="music-status" class="status">--</span></div>
+		</div>
+		<div class="key-value">
+			<div class="key">Platform:</div>
+			<div class="value" id="music-platform">--</div>
+		</div>
+		<div class="key-value">
+			<div class="key">Listeners:</div>
+			<div class="value" id="music-listeners">--</div>
+		</div>
+		<div class="key-value">
+			<div class="key">Metadata:</div>
+			<div class="value">
+				<div id="music-metadata-author">--</div>
+				<div id="music-metadata-track">--</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="section">
+		<h2>Queue (<span id="queue-length">0</span> players)</h2>
+		<table id="queue-table">
+			<thead>
+				<tr>
+					<th>Pos</th>
+					<th>IP</th>
+					<th>Nick</th>
+					<th>Status</th>
+				</tr>
+			</thead>
+			<tbody id="queue-body">
+				<tr>
+					<td colspan="4" class="empty">No players in queue</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div class="section">
+		<h2>Scoreboard (<span id="board-total">0</span> players)</h2>
+		<table id="board-table">
+			<thead>
+				<tr>
+					<th>IP</th>
+					<th>Nick</th>
+					<th>Score</th>
+					<th>Connected</th>
+				</tr>
+			</thead>
+			<tbody id="board-body">
+				<tr>
+					<td colspan="4" class="empty">No scores recorded</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div class="section">
+		<h2>Clients (<span id="client-count">0</span> total)</h2>
+		<table id="client-table">
+			<thead>
+				<tr>
+					<th>IP</th>
+					<th>Type</th>
+					<th>Nick</th>
+					<th>User-Agent</th>
+				</tr>
+			</thead>
+			<tbody id="client-body">
+				<tr>
+					<td colspan="4" class="empty">No clients connected</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<script src="/socket.js"></script>
+	<script type="module" src="../scripts/debug.js"></script>
+</body>
+
+</html>

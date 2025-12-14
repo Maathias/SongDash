@@ -1,6 +1,8 @@
 import { WebSocketServer } from 'ws'
 import express from 'express'
 import os from 'os'
+import { fileURLToPath } from 'url'
+import { dirname, join } from 'path'
 
 import env from './env.js'
 import logger from './logger.js'
@@ -10,15 +12,44 @@ import Qr from './backend/Qr.js'
 import Queue from './backend/Queue.js'
 import Board from './backend/Board.js'
 
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+
 const app = express()
 
-app.use(express.static('public'))
+// Determine if we're in production (built) or development
+const isProduction = process.env.NODE_ENV === 'production'
+const pagesDir = isProduction ? 'dist' : 'src/pages'
 
-// Serve pages from /pages directory with clean URLs
+// When running as nexe binary, use process.cwd() as base path
+// Otherwise use __dirname (for normal node execution)
+const isNexeBinary = process.argv[0].includes('songdash')
+const basePath = isNexeBinary ? process.cwd() : __dirname
+
+// Serve static files from public directory
+app.use(express.static(join(basePath, 'public')))
+
+// In development, also serve src directory for Vite assets
+if (!isProduction) {
+	app.use('/src', express.static(join(basePath, 'src')))
+	// Serve styles and scripts directly for relative imports from HTML
+	app.use('/styles', express.static(join(basePath, 'src/styles')))
+	app.use('/scripts', express.static(join(basePath, 'src/scripts')))
+}
+
+// Serve built pages from /dist in production
+if (isProduction) {
+	app.use(express.static(join(basePath, 'dist')))
+}
+
+// Serve pages with clean URLs
 app.get('/:page', (req, res, next) => {
 	const allowedPages = ['host', 'player', 'tv', 'debug']
 	if (allowedPages.includes(req.params.page)) {
-		res.sendFile(`pages/${req.params.page}.html`, { root: '.' })
+		const filePath = isProduction
+			? join(basePath, 'dist', `${req.params.page}.html`)
+			: join(basePath, pagesDir, `${req.params.page}.html`)
+		res.sendFile(filePath)
 	} else {
 		next()
 	}

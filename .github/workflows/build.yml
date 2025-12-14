@@ -1,0 +1,81 @@
+name: Build Binaries
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build client
+        run: pnpm build:client
+
+      # NOTE: Binary building disabled due to nexe ESM compatibility issues
+      # To be re-enabled once ESM support improves or alternative tool is used
+      # - name: Build server binaries
+      #   run: pnpm build:server
+
+      - name: Upload dist artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: songdash-dist
+          path: dist/
+          retention-days: 30
+
+      # - name: Upload Windows binary
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: songdash-windows-x64
+      #     path: build/songdash-windows-x64.exe
+      #     retention-days: 30
+
+      # - name: Upload Linux binary
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: songdash-linux-x64
+      #     path: build/songdash-linux-x64
+      #     retention-days: 30
+
+      # - name: Create Release (on tag)
+      #   if: startsWith(github.ref, 'refs/tags/')
+      #   uses: softprops/action-gh-release@v1
+      #   with:
+      #     files: |
+      #       build/songdash-windows-x64.exe
+      #       build/songdash-linux-x64
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
