@@ -192,11 +192,12 @@
 					<th>IP</th>
 					<th>Nick</th>
 					<th>Status</th>
+					<th>Time</th>
 				</tr>
 			</thead>
 			<tbody id="queue-body">
 				<tr>
-					<td colspan="4" class="empty">No players in queue</td>
+					<td colspan="5" class="empty">No players in queue</td>
 				</tr>
 			</tbody>
 		</table>
@@ -274,7 +275,7 @@
 			const queueBody = document.getElementById('queue-body')
 
 			if (data.queue.queue.length === 0) {
-				queueBody.innerHTML = '<tr><td colspan="4" class="empty">No players in queue</td></tr>'
+				queueBody.innerHTML = '<tr><td colspan="5" class="empty">No players in queue</td></tr>'
 			} else {
 				queueBody.innerHTML = data.queue.queue.map(item => `
 					<tr>
@@ -282,6 +283,7 @@
 						<td>${item.ip}</td>
 						<td>${item.nick || '--'}</td>
 						<td>${item.isActive ? '<span class="status active">ACTIVE</span>' : ''}</td>
+						<td>${item.time !== null ? item.time.toFixed(4) + 's' : '--'}</td>
 					</tr>
 				`).join('')
 			}

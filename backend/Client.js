@@ -82,7 +82,7 @@ class Client {
 
 	handleRegistration(clientType) {
 		const validTypes = ['tv', 'host', 'player', 'debug']
-		if (!validTypes.includes(clientType)) return
+		if (!validTypes.includes(clientType)) throw new Error(`Invalid client type: ${clientType}`)
 
 		this.type = clientType
 		logger.info('Client', `'${this.ip}' registered as`, this.type)

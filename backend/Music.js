@@ -183,6 +183,7 @@ class Music {
 	static metadata = null
 	static listeners = new Set()
 	static #platform = null
+	static playingSince = null
 
 	static init(platform) {
 		this.#platform = platform
@@ -214,6 +215,9 @@ class Music {
 		if (!allowed.includes(status)) return
 
 		this.status = status
+		if (status === 'playing') {
+			this.playingSince = new Date()
+		}
 
 		logger.debug('Music', `status changed to`, status)
 	}
