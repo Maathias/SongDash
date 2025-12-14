@@ -1,235 +1,242 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-		<title>TV - Jaka To Melodia</title>
-		<script src="/socket.js"></script>
-		<script src="/wakelock.js"></script>
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-		<link rel="stylesheet" href="/common.css" />
-		<link rel="stylesheet" href="/pattern.css" />
-		<link rel="stylesheet" href="/loader.css" />
+	<title>TV - Jaka To Melodia</title>
+	<script src="/socket.js"></script>
+	<script src="/wakelock.js"></script>
 
-		<style>
-			body {
-				height: 100vh;
-				padding: 0;
-				margin: 0;
-				display: flex;
-				flex-direction: row;
-				--pattern: 22px;
-				overflow: hidden;
-				position: relative;
-			}
+	<link rel="stylesheet" href="/common.css" />
+	<link rel="stylesheet" href="/pattern.css" />
+	<link rel="stylesheet" href="/loader.css" />
 
-			.section {
-				flex: 1;
-				padding: 2rem;
-				overflow-y: auto;
-				background: #0005;
-				--margin: 1em;
-				margin: var(--margin);
-				border-radius: 1em;
-			}
+	<style>
+		body {
+			height: 100vh;
+			padding: 0;
+			margin: 0;
+			display: flex;
+			flex-direction: row;
+			--pattern: 22px;
+			overflow: hidden;
+			position: relative;
+		}
 
-			.section.l {
-				margin-right: calc(var(--margin) / 2);
-			}
+		.section {
+			flex: 1;
+			padding: 2rem;
+			overflow-y: auto;
+			background: #0005;
+			--margin: 1em;
+			margin: var(--margin);
+			border-radius: 1em;
+		}
 
-			.section.r {
-				margin-left: calc(var(--margin) / 2);
-			}
+		.section.l {
+			margin-right: calc(var(--margin) / 2);
+		}
 
-			.section .title {
-				font-size: 2.5rem;
-				font-weight: bold;
-				margin-bottom: 1.5rem;
-				text-align: center;
-				color: #fff;
-				font-family: monospace;
-				border-bottom: 1px solid #fff3;
-				padding-bottom: 0.5em;
-			}
+		.section.r {
+			margin-left: calc(var(--margin) / 2);
+		}
 
-			#status {
-				position: fixed;
-				top: 50%;
-				left: 50%;
-				transform: translate(-50%, -50%);
-				z-index: 100;
-				pointer-events: none;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				font-size: 200px;
-				text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-			}
+		.section .title {
+			font-size: 2.5rem;
+			font-weight: bold;
+			margin-bottom: 1.5rem;
+			text-align: center;
+			color: #fff;
+			font-family: monospace;
+			border-bottom: 1px solid #fff3;
+			padding-bottom: 0.5em;
+		}
 
-			#queue {
-				font-size: 30px;
-				font-family: monospace;
-				text-align: left;
-				counter-reset: poz;
-			}
+		#status {
+			position: fixed;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			z-index: -1;
+			pointer-events: none;
+			/* display: flex;
+			align-items: center;
+			justify-content: center; */
+			font-size: 500px;
+			--opacity: 0.25;
+			text-shadow: 0 0 20px rgba(0, 0, 0, var(--opacity));
+			color: rgba(0, 0, 0, var(--opacity));
+		}
 
-			#queue > .nick {
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-				padding: 0.8rem 1.5rem;
-				margin: 0.5rem 0;
-				background-color: rgba(255, 255, 255, 0.15);
-				border-radius: 0.5rem;
-				color: #fff;
-			}
+		#queue {
+			font-size: 30px;
+			font-family: monospace;
+			text-align: left;
+			counter-reset: poz;
+		}
 
-			#queue > .nick::before {
-				counter-increment: poz;
-				content: '#' counter(poz) ' ';
-				font-weight: bold;
-				color: #ccc;
-			}
+		#queue>.nick {
+			display: flex;
+			/* justify-content: space-between;
+			align-items: center; */
+			padding: 0.8rem 1.5rem;
+			margin: 0.5rem 0;
+			background-color: rgba(255, 255, 255, 0.15);
+			border-radius: 0.5rem;
+			color: #fff;
+		}
 
-			#queue > img {
-				height: 10vh;
-			}
+		#queue>.nick::before {
+			counter-increment: poz;
+			content: '#' counter(poz) ' ';
+			font-weight: bold;
+			color: #ccc;
+			padding-right: 1em;
+			width: 1.5em;
+		}
 
-			#queue .nick.active {
-				outline: 2px solid #fff;
-			}
+		#queue>img {
+			height: 10vh;
+		}
 
-			#qr-modal {
-				display: none;
-				position: fixed;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 100%;
-				background-color: rgba(0, 0, 0, 0.9);
-				z-index: 1000;
-				align-items: center;
-				justify-content: center;
-			}
+		#queue .nick.active {
+			outline: 2px solid #fff;
+		}
 
-			#qr-modal.show {
-				display: flex;
-			}
+		#qr-modal {
+			display: none;
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, 0.9);
+			z-index: 1000;
+			align-items: center;
+			justify-content: center;
+		}
 
-			#qr-modal .content {
-				background-color: white;
-				padding: 2rem;
-				border-radius: 1rem;
-				text-align: center;
-				max-width: 90vw;
-				max-height: 90vh;
-			}
+		#qr-modal.show {
+			display: flex;
+		}
 
-			#qr-modal .content img {
-				max-width: 100%;
-				height: auto;
-				border-radius: 0.5rem;
-			}
+		#qr-modal .content {
+			background-color: white;
+			padding: 2rem;
+			border-radius: 1rem;
+			text-align: center;
+			max-width: 90vw;
+			max-height: 90vh;
+		}
 
-			#scoreboard {
-				width: 100%;
-				font-size: 1.5rem;
-				font-family: monospace;
-			}
+		#qr-modal .content img {
+			max-width: 100%;
+			height: auto;
+			border-radius: 0.5rem;
+		}
 
-			#scoreboard .item {
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-				padding: 0.8rem 1.5rem;
-				margin: 0.5rem 0;
-				background-color: rgba(255, 255, 255, 0.15);
-				border-radius: 0.5rem;
-				color: #fff;
-			}
+		#scoreboard {
+			width: 100%;
+			font-size: 1.5rem;
+			font-family: monospace;
+		}
 
-			#scoreboard .item .rank i {
-				font-size: 2rem;
-			}
+		#scoreboard .item {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 0.8rem 1.5rem;
+			margin: 0.5rem 0;
+			background-color: rgba(255, 255, 255, 0.15);
+			border-radius: 0.5rem;
+			color: #fff;
+		}
 
-			#scoreboard .item:nth-child(1) .rank {
-				color: gold;
-			}
+		#scoreboard .item .rank i {
+			font-size: 2rem;
+		}
 
-			#scoreboard .item:nth-child(2) .rank {
-				color: silver;
-			}
+		#scoreboard .item:nth-child(1) .rank {
+			color: gold;
+		}
 
-			#scoreboard .item:nth-child(3) .rank {
-				color: #cd7f32; /* Bronze */
-			}
+		#scoreboard .item:nth-child(2) .rank {
+			color: silver;
+		}
 
-			#scoreboard .item > .rank {
-				font-weight: bold;
-				margin-right: 1rem;
-				min-width: 2.5rem;
-			}
+		#scoreboard .item:nth-child(3) .rank {
+			color: #cd7f32;
+			/* Bronze */
+		}
 
-			#scoreboard .item > .nick {
-				flex: 1;
-				text-align: left;
-			}
+		#scoreboard .item>.rank {
+			font-weight: bold;
+			margin-right: 1rem;
+			min-width: 2.5rem;
+		}
 
-			#scoreboard .item > .score {
-				font-weight: bold;
-				min-width: 3rem;
-				text-align: right;
-			}
-		</style>
+		#scoreboard .item>.nick {
+			flex: 1;
+			text-align: left;
+		}
+
+		#scoreboard .item>.score {
+			font-weight: bold;
+			min-width: 3rem;
+			text-align: right;
+		}
+	</style>
 	</head>
-	<body class="patterned">
-		<!-- Status Indicator -->
-		<div id="status" class="status"></div>
 
-		<!-- Left: Queue -->
-		<div class="section l">
-			<div class="title">
-				<i class="icon-stopwatch"></i>
-			</div>
-			<div id="queue">
-				<!-- Example
+<body class="patterned">
+	<!-- Status Indicator -->
+	<div id="status" class="status"></div>
+
+	<!-- Left: Queue -->
+	<div class="section l">
+		<div class="title">
+			<i class="icon-stopwatch"></i>
+		</div>
+		<div id="queue">
+			<!-- Example
 					<div class="nick active"> </div>
 				-->
-			</div>
+		</div>
 		</div>
 
-		<!-- Right: Scoreboard -->
-		<div class="section r">
-			<div class="title">
-				<i class="icon-award"></i>
-			</div>
-			<div id="scoreboard">
-				<!-- Example
+	<!-- Right: Scoreboard -->
+	<div class="section r">
+		<div class="title">
+			<i class="icon-award"></i>
+		</div>
+		<div id="scoreboard">
+			<!-- Example
 				<div class="item">
 					<span class="rank"> </span>
 					<span class="nick"> </span>
 					<span class="score"> </span>
 				</div>
 				-->
-			</div>
+		</div>
 		</div>
 
-		<!-- QR Modal -->
-		<div id="qr-modal">
-			<div class="content">
-				<img src="/qr" alt="QR Code" />
-			</div>
+	<!-- QR Modal -->
+	<div id="qr-modal">
+		<div class="content">
+			<img src="/qr" alt="QR Code" />
 		</div>
+	</div>
 
-		<script>
-			// SETUP
-			const statuses = {
-				paused: '<i class="icon-pause-circled"></i>',
-				playing: '<i class="icon-play-circled"></i>',
-				waiting: '<i class="icon-stop-circled"></i>',
-			}
+	<script>
+		// SETUP
+		const statuses = {
+			paused: '<i class="icon-pause-circled"></i>',
+			playing: '<i class="icon-play-circled"></i>',
+			waiting: '<i class="icon-stop-circled"></i>',
+		}
 
 			const nodeStatus = document.querySelector('#status'),
 				nodeQueue = document.querySelector('#queue'),
@@ -245,8 +252,8 @@
 			function setStatus(status = 'waiting') {
 				const patternColors = {
 					playing: { fg: '#18dd5c', bg: '#1bc957' },
-					paused: { fg: '#28357d', bg: '#22307b' },
-					waiting: { fg: '#364d69', bg: '#425b79' },
+					paused: { fg: '#82abdd', bg: '#88b2e3' },
+					waiting: { fg: '#9e82dd', bg: '#ab91e5' },
 				}
 
 				console.info('status', status)
@@ -280,13 +287,13 @@
 									<span class="score">${player.score}</span>
 								</div>`
 					})
-					.join('')
-			}
-		</script>
+																			.join('')
+																	}
+																</script>
 
-		<script>
-			requestWakeLock()
-			setStatus()
+	<script>
+		requestWakeLock()
+		setStatus()
 
 			socket.on('update', ({ board, active, queue, status }) => {
 				setQueue(queue, active)
@@ -299,4 +306,5 @@
 			})
 		</script>
 	</body>
+
 </html>

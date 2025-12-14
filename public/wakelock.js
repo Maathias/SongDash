@@ -1,5 +1,6 @@
 // The wake lock sentinel.
-let wakeLock = null
+let wakeLock = null,
+	retry = null
 
 // Function that attempts to request a wake lock.
 const requestWakeLock = async () => {
@@ -7,6 +8,11 @@ const requestWakeLock = async () => {
 		wakeLock = await navigator.wakeLock.request('screen')
 		wakeLock.addEventListener('release', () => {
 			console.log('Wake Lock was released')
+			if (retry != null)
+				retry = setTimeout(() => {
+					requestWakeLock()
+					retry = null
+				}, 2e3)
 		})
 		console.log('Wake Lock is active')
 	} catch (err) {
