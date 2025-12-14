@@ -12,9 +12,10 @@ const NODE_ENV = process.env.NODE_ENV,
 dotenv.config({ path: `./${dotfile}` })
 
 const env = {
-  HTTP_PORT: 2500,
-  WS_PORT: 2501,
-  LOG_LEVEL: 'info',
+	HTTP_PORT: 2500,
+	WS_PORT: 2501,
+	LOG_LEVEL: 'info',
+	SERVER_HOST: '',
 }
 
 // Override defaults with environment variables if they exist

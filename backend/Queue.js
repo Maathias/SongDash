@@ -1,47 +1,67 @@
 import logger from '../logger.js'
 
 class Queue {
-  static array = []
-  static active = null
+	static array = []
+	static active = null
 
-  static add(client) {
-    if (this.isClientInQueue(client)) {
-      // if (Music.status == 'playing') this.active++
-      return
-    }
+	static add(client) {
+		if (this.isClientInQueue(client)) {
+			// if (Music.status == 'playing') this.active++
+			return
+		}
 
-    if (this.isEmpty) this.active = 0
-    this.array.push(client)
+		if (this.isEmpty) this.active = 0
+		this.array.push(client)
 
-    logger.debug('Queue', `client added to queue`, client.ip)
-  }
+		logger.debug('Queue', `client added to queue`, client.ip)
+	}
 
-  static get isEmpty() {
-    return this.array.length == 0
-  }
+	static get isEmpty() {
+		return this.array.length == 0
+	}
 
-  static isClientInQueue(client) {
-    return this.array.some(c => c.ip === client.ip)
-  }
+	static isClientInQueue(client) {
+		return this.array.some(c => c.ip === client.ip)
+	}
 
-  static clear() {
-    this.array = []
-    this.active = null
+	static clear() {
+		this.array = []
+		this.active = null
 
-    logger.debug('Queue', `queue cleared`)
-  }
+		logger.debug('Queue', `queue cleared`)
+	}
 
-  static nextPlayer() {
-    this.active = (this.active + 1) % this.array.length
-  }
+	static nextPlayer() {
+		this.active = (this.active + 1) % this.array.length
+	}
 
-  static get rendered() {
-    return this.array.map(client => client.nick)
-  }
+	static get rendered() {
+		return this.array.map(client => client.nick)
+	}
 
-  static get activeClient() {
-    return this.array[this.active]
-  }
+	static get activeClient() {
+		return this.array[this.active]
+	}
+
+	static debug() {
+		return {
+			queue: this.array.map((client, index) => ({
+				position: index,
+				ip: client.ip,
+				nick: client.nick || null,
+				isActive: index === this.active,
+			})),
+			active: this.active,
+			length: this.array.length,
+			isEmpty: this.isEmpty,
+			activeClient: this.activeClient
+				? {
+						ip: this.activeClient.ip,
+						nick: this.activeClient.nick || null,
+				  }
+				: null,
+		}
+	}
 }
 
 export default Queue

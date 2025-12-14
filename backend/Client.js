@@ -1,22 +1,44 @@
 import logger from '../logger.js'
 import Board from './Board.js'
 import Music from './Music.js'
+import { UAParser } from 'ua-parser-js'
+
+function getUA(req) {
+	const uaString = req.headers['user-agent'] || null
+
+	if (uaString) {
+		const parser = new UAParser(uaString)
+		const result = parser.getResult()
+		return {
+			raw: uaString,
+			browser: result.browser.name ? `${result.browser.name} ${result.browser.version || ''}`.trim() : null,
+			os: result.os.name ? `${result.os.name} ${result.os.version || ''}`.trim() : null,
+			device: result.device.type || 'desktop',
+		}
+	}
+}
 
 class Client {
 	static list = []
 	static listeners = new Map()
 
 	type = null
+	nick = null
+	ip = null
+	ws = null
+	userAgent = null
 
 	constructor(ws, req) {
 		this.ws = ws
 		ws.client = this
 
 		this.ip = req.socket.remoteAddress
+		this.userAgent = getUA(req)
 
 		logger.debug('Client', 'up', this.ip)
 
 		Client.list.push(this)
+		Client.emit('debug')
 
 		ws.on('close', () => {
 			logger.debug('Client', 'down', this.ip)
@@ -29,6 +51,8 @@ class Client {
 					listeners.filter(listener => listener.who !== this)
 				)
 			})
+
+			Client.emit('debug')
 		})
 
 		ws.on('message', data => {
@@ -57,7 +81,7 @@ class Client {
 	}
 
 	handleRegistration(clientType) {
-		const validTypes = ['tv', 'host', 'player']
+		const validTypes = ['tv', 'host', 'player', 'debug']
 		if (!validTypes.includes(clientType)) return
 
 		this.type = clientType
@@ -73,6 +97,8 @@ class Client {
 				action: 'metadata',
 				data: Music.metadata,
 			})
+		} else if (this.type == 'debug') {
+			Client.emit('update')
 		}
 	}
 
@@ -111,6 +137,19 @@ class Client {
 		return {
 			ip: ip => Client.list.find(client => client.ip == ip),
 			type: type => Client.list.filter(client => client.type == type),
+		}
+	}
+
+	static debug() {
+		return {
+			clients: Client.list.map(client => ({
+				ip: client.ip,
+				type: client.type,
+				nick: client.nick || null,
+				userAgent: client.userAgent,
+				connected: client.ws.readyState === 1,
+			})),
+			totalClients: Client.list.length,
 		}
 	}
 }

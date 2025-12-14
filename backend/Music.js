@@ -240,6 +240,15 @@ class Music {
 	static emit(payload) {
 		this.listeners.forEach(callback => callback(payload))
 	}
+
+	static debug() {
+		return {
+			status: this.status,
+			metadata: this.metadata,
+			platform: this.#platform,
+			listenerCount: this.listeners.size,
+		}
+	}
 }
 
 export default Music

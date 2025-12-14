@@ -2,11 +2,7 @@ import logger from '../logger.js'
 import Client from './Client.js'
 
 class Board {
-	static scores = {
-		'::1': 10,
-		'::2': 20,
-		'::3': 30,
-	}
+	static scores = {}
 
 	static addPlayer(client) {
 		if (this.scores[client.ip]) return
@@ -46,6 +42,21 @@ class Board {
 					score,
 				}
 			})
+	}
+
+	static debug() {
+		return {
+			scores: Object.entries(this.scores).map(([ip, score]) => {
+				const client = Client.getBy.ip(ip)
+				return {
+					ip,
+					nick: client?.nick || '---',
+					score,
+					connected: client ? client.ws.readyState === 1 : false,
+				}
+			}),
+			totalPlayers: Object.keys(this.scores).length,
+		}
 	}
 }
 

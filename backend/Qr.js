@@ -7,9 +7,9 @@ export default class Qr {
   static #host = null
 
   static init(host) {
-    this.#host = host
-    logger.info('Qr', 'host for qr', host)
-    if (!host) logger.warn('env', 'SERVER_HOST is not defined, QR codes will not be generated')
+    if (!host) return logger.warn('env', 'SERVER_HOST is not defined, QR codes will not be generated')
+		this.#host = host
+		logger.info('Qr', 'host for qr', host)
   }
 
   static serve() {
@@ -18,6 +18,7 @@ export default class Qr {
 
       try {
         if (this.host === null) {
+          res.status(500).send('QR code generation is not configured')
           throw new Error('SERVER_HOST is not defined')
         }
 

@@ -16,7 +16,7 @@ app.use(express.static('public'))
 
 // Serve pages from /pages directory with clean URLs
 app.get('/:page', (req, res, next) => {
-	const allowedPages = ['host', 'player', 'tv']
+	const allowedPages = ['host', 'player', 'tv', 'debug']
 	if (allowedPages.includes(req.params.page)) {
 		res.sendFile(`pages/${req.params.page}.html`, { root: '.' })
 	} else {
@@ -32,7 +32,7 @@ const wss = new WebSocketServer({
 	port: env.WS_PORT,
 }).on('listening', () => logger.info('server', 'websocket port is', env.WS_PORT))
 
-Qr.init(process.env.SERVER_HOST)
+Qr.init(env.SERVER_HOST)
 Music.init(os.platform())
 
 wss.on('connection', (ws, req) => new Client(ws, req))
@@ -61,6 +61,23 @@ Client.on('update', () => {
 				active: Queue.active,
 				status: Music.status,
 				board: Board.rendered,
+			},
+		})
+	})
+
+	Client.emit('debug')
+})
+
+Client.on('debug', () => {
+	Client.getBy.type('debug').forEach(debug => {
+		debug.send({
+			action: 'update',
+			data: {
+				client: Client.debug(),
+				board: Board.debug(),
+				music: Music.debug(),
+				queue: Queue.debug(),
+				timestamp: new Date().toISOString(),
 			},
 		})
 	})
