@@ -1,4 +1,4 @@
-import Client from './Client.js'
+import logger from '../logger.js'
 
 class Queue {
   static array = []
@@ -11,8 +11,9 @@ class Queue {
     }
 
     if (this.isEmpty) this.active = 0
+    this.array.push(client)
 
-    this.push(client)
+    logger.debug('Queue', `client added to queue`, client.ip)
   }
 
   static get isEmpty() {
@@ -23,13 +24,11 @@ class Queue {
     return this.array.some(c => c.ip === client.ip)
   }
 
-  static push(client) {
-    this.array.push(client)
-  }
-
   static clear() {
     this.array = []
     this.active = null
+
+    logger.debug('Queue', `queue cleared`)
   }
 
   static nextPlayer() {

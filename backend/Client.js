@@ -1,178 +1,118 @@
-import Music from './Music.js'
-import Queue from './Queue.js'
+import logger from '../logger.js'
 import Board from './Board.js'
+import Music from './Music.js'
 
 class Client {
-  static list = []
-  static listeners = []
+	static list = []
+	static listeners = new Map()
 
-  type = null
+	type = null
 
-  constructor(ws, req) {
-    this.ws = ws
-    ws.client = this
-    this.ip = req.socket.remoteAddress
+	constructor(ws, req) {
+		this.ws = ws
+		ws.client = this
 
-    console.info(`ws    : up ${this.ip}`)
+		this.ip = req.socket.remoteAddress
 
-    Client.list.push(this)
+		logger.debug('Client', 'up', this.ip)
 
-    ws.on('close', () => {
-      console.info(`ws    : down ${this.ip}`)
-      Client.list = Client.list.filter(client => client != this)
-      Client.listeners = Client.listeners.filter(listener => listener.who != this)
-      // Board.removePlayer(this)
-    })
+		Client.list.push(this)
 
-    ws.on('message', data => {
-      let payload = JSON.parse(data.toString())
-      this.receive(payload)
-    })
-  }
+		ws.on('close', () => {
+			logger.debug('Client', 'down', this.ip)
+			Client.list = Client.list.filter(client => client != this)
 
-  receive(payload) {
-    // Handle client registration
-    if (payload.whoami) {
-      this.handleRegistration(payload.whoami)
-      return
-    }
+			// Clean up event listeners for this client
+			Client.listeners.forEach((listeners, eventName) => {
+				Client.listeners.set(
+					eventName,
+					listeners.filter(listener => listener.who !== this)
+				)
+			})
+		})
 
-    // Require client to be registered before handling other commands
-    if (this.type == null) return
+		ws.on('message', data => {
+			let message = JSON.parse(data.toString())
+			this.receive(message)
+		})
+	}
 
-    // Handle type-specific commands
-    switch (this.type) {
-      case 'player':
-        this.handlePlayerCommands(payload)
-        break
-      case 'host':
-        this.handleHostCommands(payload)
-        break
-      case 'tv':
-        // TV clients only receive broadcasts, no commands
-        break
-    }
+	receive(message) {
+		const { type, action, data } = message
 
-    Client.trigger('update')
+		logger.trace('Client', 'recv', { type, action, from: this.ip })
 
-    // Client.broadcast('update')
-  }
+		// Handle client registration
+		if (type === 'register') {
+			return this.handleRegistration(data.clientType)
+		}
 
-  handleRegistration(clientType) {
-    const validTypes = ['tv', 'host', 'player']
-    if (!validTypes.includes(clientType)) return
+		// Require client to be registered before handling other commands
+		if (this.type == null) return
 
-    this.type = clientType
-    console.info(`ws    : '${this.type}' registered`)
+		if (type == 'player') Client.emit('playerAction-' + action, { client: this, data })
+		if (type == 'host') Client.emit('hostAction-' + action, data)
 
-    if (this.type == 'tv') {
-      // Client.broadcast('update')
-      Client.on(
-        'update',
-        () => {
-          this.send({
-            queue: Queue.rendered,
-            active: Queue.active,
-            status: Music.status,
-          })
-        },
-        this
-      )
-    }
+		Client.emit('update')
+	}
 
-    if (this.type == 'player') {
-      Board.addPlayer(this)
-      // Client.broadcast('score', this)
-      Client.on(
-        'score',
-        client => {
-          if (client !== this) return
-          this.send({
-            points: Board.score.get(this),
-          })
-        },
-        this
-      )
-    }
+	handleRegistration(clientType) {
+		const validTypes = ['tv', 'host', 'player']
+		if (!validTypes.includes(clientType)) return
 
-    if (this.type == 'host') {
-      Client.on(
-        'musicMetadata',
-        ({ metadata }) => {
-          this.send({ metadata })
-        },
-        this
-      )
-    }
-  }
+		this.type = clientType
+		logger.info('Client', `'${this.ip}' registered as`, this.type)
 
-  handlePlayerCommands(payload) {
-    if (payload.nick) {
-      const nick = payload.nick
-      if (typeof nick != 'string') return
-      if (nick.trim() == '') return
+		if (this.type == 'player') {
+			Board.addPlayer(this)
+		} else if (this.type == 'tv') {
+			Client.emit('update')
+		} else if (this.type == 'host') {
+			this.send({
+				type: 'state',
+				action: 'metadata',
+				data: Music.metadata,
+			})
+		}
+	}
 
-      this.nick = nick
-      console.info(`ws    : '${this.ip}' renamed to '${this.nick}'`)
-    }
+	send(message) {
+		this.ws.send(JSON.stringify(message))
+		logger.trace('Client', 'send', message)
+	}
 
-    if (payload.entry) {
-      console.info(`ws    : '${this.nick}' entered`)
-      Queue.add(this)
-      Music.control('Pause')
-    }
-  }
+	// Emit an event to all registered listeners
+	static emit(event, payload) {
+		const listeners = this.listeners.get(event) || []
+		listeners.forEach(listener => {
+			listener.callback(payload)
+		})
+	}
 
-  handleHostCommands(payload) {
-    const { action, points } = payload
+	// Register an event listener
+	static on(event, callback, who) {
+		if (!this.listeners.has(event)) {
+			this.listeners.set(event, [])
+		}
+		this.listeners.get(event).push({ callback, who })
+	}
 
-    const actions = {
-      clear: () => {
-        Queue.clear()
-        Music.setStatus('waiting')
-      },
-      play: () => {
-        Music.control('Play')
-      },
-      pause: () => {
-        Music.control('Pause')
-      },
-      next: () => {
-        Music.control('Next')
-        Queue.clear()
-      },
-      nextPlayer: () => {
-        Queue.nextPlayer()
-      },
-      points: () => {
-        Board.score.bump(Queue.activeClient, points)
-        Client.trigger('score', Queue.activeClient)
-      },
-    }
+	// static off(event, who) {
+	//   if (!this.listeners.has(event)) return
 
-    if (actions[action]) actions[action]()
-  }
+	//   const listeners = this.listeners.get(event)
+	//   this.listeners.set(
+	//     event,
+	//     listeners.filter(listener => listener.who !== who)
+	//   )
+	// }
 
-  send(payload) {
-    this.ws.send(JSON.stringify(payload))
-  }
-
-  static trigger(event, payload) {
-    Client.listeners.forEach(listener => {
-      if (listener.event == event) listener.callback(payload)
-    })
-  }
-
-  static on(event, callback, who) {
-    this.listeners.push({ event, callback, who })
-  }
-
-  static get getBy() {
-    return {
-      ip: ip => Client.list.find(client => client.ip == ip),
-      type: type => Client.list.filter(client => client.type == type),
-    }
-  }
+	static get getBy() {
+		return {
+			ip: ip => Client.list.find(client => client.ip == ip),
+			type: type => Client.list.filter(client => client.type == type),
+		}
+	}
 }
 
 export default Client

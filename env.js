@@ -1,22 +1,23 @@
 import dotenv from 'dotenv'
 
 const NODE_ENV = process.env.NODE_ENV,
-	dotfile = {
-		production: '.env',
-		development: '.dev.env',
-	}[NODE_ENV ?? 'production']
+  dotfile = {
+    production: '.env',
+    development: '.dev.env',
+  }[NODE_ENV ?? 'production']
 
-console.info(`env   : ${NODE_ENV} | ${dotfile}`)
+// logger.info('env', `${NODE_ENV} | ${dotfile}`)
 
-const config = dotenv.config({ path: `./${dotfile}` })
-
-if (config.error) throw `enviroment file ${dotfile} not found`
+// Try to load env file, but don't throw if it doesn't exist
+dotenv.config({ path: `./${dotfile}` })
 
 const env = {
-	HTTP_PORT: 2500,
-	WS_PORT: 2501,
+  HTTP_PORT: 2500,
+  WS_PORT: 2501,
+  LOG_LEVEL: 'info',
 }
 
+// Override defaults with environment variables if they exist
 for (let key in env) {
 	process.env[key] && (env[key] = env[key].constructor(process.env[key]))
 }

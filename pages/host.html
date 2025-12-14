@@ -6,6 +6,8 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 		<title>Host - Jaka To Melodia</title>
+
+		<link rel="stylesheet" href="/pattern.css" />
 		<script src="/socket.js"></script>
 		<style>
 			* {
@@ -15,33 +17,35 @@
 			}
 
 			body {
+				--fgcolor: #e77021;
+				--bgcolor: #f97a1e;
+				--pattern: 22px;
 				font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 				min-height: 100vh;
 				display: flex;
 				justify-content: center;
 				align-items: center;
-				background: linear-gradient(135deg, #ffd700 0%, #ff4444 100%);
 				padding: 1rem;
 			}
 
 			.container {
 				width: 100%;
 				max-width: 600px;
-				background: white;
 				border-radius: 1rem;
 				padding: 2rem;
-				box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+				background: #1a1a1a;
+				box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
 			}
 
 			h1 {
 				text-align: center;
 				margin-bottom: 1.5rem;
-				color: #333;
+				color: #f0f0f0;
 				font-size: 2rem;
 			}
 
 			.track-info {
-				background: linear-gradient(135deg, #ffd700 0%, #ff4444 100%);
+				background: var(--bgcolor);
 				border-radius: 0.75rem;
 				padding: 1.5rem;
 				margin-bottom: 2rem;
@@ -70,7 +74,7 @@
 				font-weight: 600;
 				text-transform: uppercase;
 				letter-spacing: 0.05em;
-				color: #666;
+				color: #999;
 				margin-bottom: 0.75rem;
 			}
 
@@ -85,7 +89,7 @@
 				font-size: 1rem;
 				font-weight: 600;
 				color: white;
-				background: linear-gradient(135deg, #ffd700 0%, #ff4444 100%);
+				background: var(--bgcolor);
 				border: none;
 				border-radius: 0.5rem;
 				cursor: pointer;
@@ -102,58 +106,67 @@
 				transform: translateY(0);
 			}
 
-			@media (prefers-color-scheme: dark) {
-				body {
-					background: linear-gradient(135deg, #664d00 0%, #660000 100%);
-				}
+			/* @media (prefers-color-scheme: dark) {
 
-				.container {
-					background: #1a1a1a;
-					box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
-				}
 
 				h1 {
-					color: #f0f0f0;
+					
 				}
 
 				.section-title {
-					color: #999;
+					
 				}
 
 				button {
 					background: linear-gradient(135deg, #cc9900 0%, #cc0000 100%);
 				}
-			}
+			} */
 		</style>
 	</head>
-	<body>
+	<body class="patterned">
 		<div class="container">
 			<h1>Host Panel</h1>
 
 			<div class="track-info">
-				<div class="artist" id="artist">—</div>
 				<div class="track" id="track">—</div>
+				<div class="artist" id="artist">—</div>
 			</div>
 
 			<div class="section">
 				<div class="section-title">Playback</div>
 				<div class="button-group">
-					<button onclick="socket.send({action: 'play'})">Play</button>
-					<button onclick="socket.send({action: 'pause'})">Pause</button>
-					<button onclick="socket.send({action: 'next'})">Next</button>
-					<button onclick="socket.send({action: 'clear'})">Clear</button>
+					<button onclick="socket.host('play')">Play</button>
+					<button onclick="socket.host('pause')">Pause</button>
+					<button onclick="socket.host('next')">Next</button>
+					<button onclick="socket.host('clear')">Clear</button>
 				</div>
 			</div>
 
 			<div class="section">
 				<div class="section-title">Points</div>
 				<div class="button-group">
-					<button onclick="socket.send({action: 'points', points: 0.5})">+0.5</button>
-					<button onclick="socket.send({action: 'points', points: 1})">+1</button>
-					<button onclick="socket.send({action: 'points', points: 2})">+2</button>
-					<button onclick="socket.send({action: 'nextPlayer'})">Next Player</button>
+					<button onclick="socket.host('points', { points: 0.5 })">+0.5</button>
+					<button onclick="socket.host('points', { points: 1 })">+1</button>
+					<button onclick="socket.host('points', { points: 2 })">+2</button>
+					<button onclick="socket.host('nextPlayer')">Next Player</button>
 				</div>
 			</div>
+
+			<div class="section">
+				<div class="section-title">QR Code</div>
+				<div class="button-group">
+					<button onclick="socket.host('showQr', { show: true })">Show QR</button>
+					<button onclick="socket.host('showQr', { show: false })">Hide QR</button>
+				</div>
+			</div>
+
+			<!-- <div class="section">
+        <div class="section-title">Scoreboard</div>
+        <div class="button-group">
+          <button onclick="socket.host('showScoreboard', { show: true })">Show Scoreboard</button>
+          <button onclick="socket.host('showScoreboard', { show: false })">Hide Scoreboard</button>
+        </div>
+      </div> -->
 		</div>
 
 		<script>
@@ -162,11 +175,10 @@
 			const artistElement = document.querySelector('#artist')
 			const trackElement = document.querySelector('#track')
 
-			socket.bind((data) => {
-				if (data.metadata) {
-					artistElement.textContent = data.metadata.artist
-					trackElement.textContent = data.metadata.title
-				}
+			// Use custom event listener for metadata updates
+			socket.on('metadata', metadata => {
+				artistElement.textContent = metadata.author
+				trackElement.textContent = metadata.track
 			})
 		</script>
 	</body>

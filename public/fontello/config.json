@@ -1,0 +1,52 @@
+{
+  "name": "",
+  "css_prefix_text": "icon-",
+  "css_use_suffix": false,
+  "hinting": true,
+  "units_per_em": 1000,
+  "ascent": 850,
+  "glyphs": [
+    {
+      "uid": "ab656e280958018a7859eba9a1eabbc7",
+      "css": "award",
+      "code": 59392,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "f6766a8b042c2453a4e153af03294383",
+      "css": "list-numbered",
+      "code": 61643,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "fc006ff27e50163bdec3a7588226171b",
+      "css": "play-circled",
+      "code": 59393,
+      "src": "elusive"
+    },
+    {
+      "uid": "8710d1e404dcb3a55b3ab97f797355b5",
+      "css": "pause-circled",
+      "code": 59394,
+      "src": "elusive"
+    },
+    {
+      "uid": "fa2a253fba2da626ef08edcc62d1e4b6",
+      "css": "stop-circled",
+      "code": 59395,
+      "src": "elusive"
+    },
+    {
+      "uid": "53c977df16b09e3f7700a27ec90c43dc",
+      "css": "stopwatch",
+      "code": 59396,
+      "src": "mfglabs"
+    },
+    {
+      "uid": "96f70b04affa57b79d70f5874815a912",
+      "css": "award-1",
+      "code": 59397,
+      "src": "iconic"
+    }
+  ]
+}

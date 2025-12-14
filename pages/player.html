@@ -70,15 +70,15 @@
     </style>
   </head>
   <body class="patterned">
-    <div id="score">
+    <!-- <div id="score">
       <span>Punkty:</span>
       <span id="points">0</span>
-    </div>
+    </div> -->
 
     <input type="text" id="nick" placeholder="nick" maxlength="20" />
 
     <button>
-      <img src="twerk.gif" alt="doopa" />
+      <!-- <img src="twerk.gif" alt="doopa" /> -->
     </button>
 
     <script>
@@ -94,7 +94,7 @@
       // Initialize nickname
       const savedNick = localStorage.getItem('nick') || ''
       nodeNick.value = savedNick
-      socket.player('nick', savedNick)
+      socket.player('setNick', { nick: savedNick })
 
       // Handle button press
       nodeButton.addEventListener('mousedown', () => socket.player('enter'))
@@ -103,18 +103,16 @@
       // Handle nickname changes
       const setNick = e => {
         const nick = e.target.value.trim().toLowerCase()
-        socket.player('nick', nick)
+        socket.player('setNick', { nick })
         localStorage.setItem('nick', nick)
       }
 
       nodeNick.addEventListener('change', setNick)
 
-      // Update points display
-      socket.bind(data => {
-        if (data.points !== undefined) {
-          nodePoints.textContent = data.points
-        }
-      })
+      // // Update points display using custom event listener
+      // socket.on('points', points => {
+      //   nodePoints.textContent = points
+      // })
     </script>
   </body>
 </html>
