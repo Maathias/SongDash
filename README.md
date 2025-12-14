@@ -20,9 +20,11 @@ When a player presses their button, the music pauses and they join the queue. Th
    ```bash
    pnpm install
    ```
-3. Modifications (optional):
+3. Modifications:
 
 	For customizations, look at `.env.example` for possible values, and change them in `.env` before launching
+
+   IMPORTANT: for a working QR code generation, create a `.env` file with at least `SERVER_HOST`
 
 4. Start the server:
 
